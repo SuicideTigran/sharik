@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 Author Eugene Mamin(mailto: thedzhon@gmail.com)
@@ -11,9 +11,7 @@ Script prerequisites:
 
 '''
 
-import math
-
-from pyproj import Geod
+# Data block [edit]
 
 latB=47.176928
 lonB=39.425619
@@ -27,28 +25,39 @@ latC2=47.180747
 lonC2=39.424546
 altC2=7.000000
 
+# Actual script
+
+import math
+
+from pyproj import Geod
+from dataclasses import dataclass
+
+@dataclass
+class DistanceAndDirection:
+    distance: float
+    azimuth: float
+    elevation: float
+
 g = Geod(ellps='WGS84')
 
-azC1,_,projdC1 = g.inv(lonC1,latC1,lonB,latB)
-azC2,_,projdC2 = g.inv(lonC2,latC2,lonB,latB)
+def handle_camera(lat: float, lon: float, alt: float) -> DistanceAndDirection:
+    azC,_,projdC = g.inv(lon,lat,lonB,latB)
+    if(azC<0):
+        azC = azC + 360.
+    
+    hC = (altB-alt)
+    dC = (projdC**2 + hC**2) ** 0.5
 
-if(azC1<0):
-    azC1 = azC1 + 360.
-if(azC2<0):
-    azC2 = azC2 + 360.
+    elC = math.atan(hC / projdC) * 180. / math.pi
+    
+    return DistanceAndDirection(dC,azC,elC) 
 
-hC1 = (altB-altC1)
-hC2 = (altB-altC2)
+c1Data = handle_camera(latC1,lonC1,altC1)
+c2Data = handle_camera(latC2,lonC2,altC2)
 
-dC1 = (projdC1**2 + hC1**2) ** 0.5
-dC2 = (projdC2**2 + hC2**2) ** 0.5
+info_str  = "Camera #{c} -> balloon: {d:.2f} meters, " \
+	"azimuth {az:.2f} deg, " \
+        "elevation {el:.2f} deg"
 
-elC1 = math.atan(hC1 / projdC1) * 180. / math.pi  
-elC2 = math.atan(hC2 / projdC2) * 180. / math.pi
-
-info_str  = "Camera #{c}: distance is {d:.2f} meters, " \
-	"azimuth {az:.2f} degrees, " \
-        "elevation {el:.2f} degrees"
-
-print (info_str.format(c=1,d=dC1,az=azC1,el=elC1))
-print (info_str.format(c=2,d=dC2,az=azC2,el=elC2))
+print (info_str.format(c=1,d=c1Data.distance,az=c1Data.azimuth,el=c1Data.elevation))
+print (info_str.format(c=2,d=c2Data.distance,az=c2Data.azimuth,el=c2Data.elevation))
