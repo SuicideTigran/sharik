@@ -1,14 +1,13 @@
-#include "mainwindow.h"
+#include "header/mainwindow.h"
 #include <QApplication>
 #include <QWidget>
-
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    MainWindow *mWin = new MainWindow();
-    mWin->show();
+    MainWindow mWin;
+    mWin.show();
 
     return a.exec();
 }

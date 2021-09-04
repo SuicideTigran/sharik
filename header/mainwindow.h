@@ -20,32 +20,21 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_actionQuit_triggered();
-
     void slotFirstButtonClicked();
-
     void slotSecondButtonClicked();
-
-    void on_actionProgramm_triggered();
-
-    void on_actionQt_triggered();
-
-    void on_actionClear_triggered();
-
-private:
-    QVector<double> dataFirstCam;
-    QVector<double> dataSecondCam;
-    QVector<double> dataResultCam;
+    void slotCloseButtonClicked();
+    void slotClearButtonClicked();
+    void slotAboutQtButtonClicked();
+    void slotAboutProgramButtonClicked();
+    void slotResultButtonClicked();
 
 private:
     void resultClick();
     QVector<double> dataFromFile();
-    QVector<double> calculateResult();
-    bool checkGauss(QVector<QVector <double>> matrix, QVector <double> vec);
-    QVector<double> gauss(QVector<QVector <double>> a, QVector<double> y, int n);
-    double degToRad(double D);
 
-private:
+    QVector<double> dataFirstCam;
+    QVector<double> dataSecondCam;
+    QVector<double> dataResultCam;
     Ui::MainWindow *ui;
 
 };
