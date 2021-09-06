@@ -6,7 +6,7 @@
 namespace shmath {
 
     enum indexDataCam {lat, lon, hgt, azim, elevation, resolutionW, resolutionH,
-         positionX, positionY, sizeW, sizeH, fowW, fowH};
+         positionX, positionY, sizeW, sizeH, fowW, fowH, indexDataCamLength };
     enum indexVector {dirX, dirY, dirZ};
 
     QVector<double> gauss(QVector<QVector <double>> a, QVector<double> y, int n);

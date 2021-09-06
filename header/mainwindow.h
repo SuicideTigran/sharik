@@ -3,9 +3,13 @@
 #include <QMainWindow>
 #include <QVector>
 
+#include "mathematics.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
+
+class QDoubleSpinBox;
 
 class MainWindow : public QMainWindow
 {
@@ -31,6 +35,9 @@ private:
     QVector<double> dataFirstCam;
     QVector<double> dataSecondCam;
     QVector<double> dataResultCam;
+
+    std::array<QDoubleSpinBox*, shmath::indexDataCamLength> firstCamSpinBoxes;
+    std::array<QDoubleSpinBox*, shmath::indexDataCamLength> secondCamSpinBoxes;
 
     Ui::MainWindow *ui;
 };

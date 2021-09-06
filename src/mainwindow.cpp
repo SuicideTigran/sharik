@@ -10,8 +10,6 @@
 #include "mathematics.h"
 
 namespace {
-    const double numInputData = 13;
-
     QVector<QString> strCam = {"Широта видеокамеры:", "Долгота видеокамеры:", "Высота видеокамеры:", "Азимут:",
                                "Угол места:", "Число пикселей по горизонтали:", "Число пикселей по вертикали:",
                                "Расположение шарика по оси абцис:", "Расположение шарика по оси ординат:",
@@ -34,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionProgramm, &QAction::triggered, this, &MainWindow::slotAboutProgramButtonClicked);
     connect(ui->resultButton, &QPushButton::clicked, this, &MainWindow::slotResultButtonClicked);
 
+    fillTaggedSpinboxes();
+
     //QHBoxLayout *layout = new QHBoxLayout(this);
     //layout->addWidget(ui->firstCamButton);
     //layout->addWidget(ui->secondCamButton);
@@ -49,23 +49,20 @@ void MainWindow::slotCloseButtonClicked()
     close();
 }
 
-
 void MainWindow::slotResultButtonClicked()
 {
-    dataFirstCam.clear(); dataSecondCam.clear();
-    dataFirstCam.push_back(ui->latFirstCam->value()); dataSecondCam.push_back(ui->latSecondCam->value());
-    dataFirstCam.push_back(ui->lonFirstCam->value()); dataSecondCam.push_back(ui->lonSecondCam->value());
-    dataFirstCam.push_back(ui->hFirstCam->value()); dataSecondCam.push_back(ui->hSecondCam->value());
-    dataFirstCam.push_back(ui->azimuthFirstCam->value()); dataSecondCam.push_back(ui->azimuthSecondCam->value());
-    dataFirstCam.push_back(ui->evelationFirstCam->value()); dataSecondCam.push_back(ui->evelationSecondCam->value());
-    dataFirstCam.push_back(ui->resolutionWidthFirstCam->value()); dataSecondCam.push_back(ui->resolutionWidthSecondCam->value());
-    dataFirstCam.push_back(ui->resolutionHeightFirstCam->value()); dataSecondCam.push_back(ui->resolutionHeightSecondCam->value());
-    dataFirstCam.push_back(ui->posistionXFirstCam->value()); dataSecondCam.push_back(ui->posistionXSecondCam->value());
-    dataFirstCam.push_back(ui->posistionYFirstCam->value()); dataSecondCam.push_back(ui->posistionYSecondCam->value());
-    dataFirstCam.push_back(ui->sizeWidthFirstCam->value()); dataSecondCam.push_back(ui->sizeWidthSecondCam->value());
-    dataFirstCam.push_back(ui->sizeHeightFirstCam->value()); dataSecondCam.push_back(ui->sizeHeightSecondCam->value());
-    dataFirstCam.push_back(ui->fowWidthFirstCam->value()); dataSecondCam.push_back(ui->fowWidthSecondCam->value());
-    dataFirstCam.push_back(ui->fowHeightSecondCam->value()); dataSecondCam.push_back(ui->fowHeightSecondCam->value());
+    dataFirstCam.clear();
+    dataSecondCam.clear();
+
+    const auto sb_value_f = [] (QDoubleSpinBox * sb) { return sb->value(); };
+
+    std::transform (std::begin (firstCamSpinBoxes), std::end (firstCamSpinBoxes),
+                    std::back_inserter<decltype(dataFirstCam)> (dataFirstCam),
+                    sb_value_f);
+
+    std::transform (std::begin (secondCamSpinBoxes), std::end (secondCamSpinBoxes),
+                    std::back_inserter<decltype(dataSecondCam)> (dataSecondCam),
+                    sb_value_f);
 
     resultClick();
 }
@@ -108,66 +105,84 @@ QVector<double> MainWindow::dataFromFile(){
     }
 }
 
-void MainWindow::slotFirstButtonClicked()
+void MainWindow::fillTaggedSpinboxes()
 {
     using namespace ::shmath;
 
-    dataFirstCam = dataFromFile();
-    if(dataFirstCam.size() == numInputData)
-    {
-        ui->latFirstCam->setValue(dataFirstCam[lat]);
-        ui->lonFirstCam->setValue(dataFirstCam[lon]);
-        ui->hFirstCam->setValue(dataFirstCam[hgt]);
-        ui->azimuthFirstCam->setValue(dataFirstCam[azim]);
-        ui->evelationFirstCam->setValue(dataFirstCam[elevation]);
-        ui->resolutionWidthFirstCam->setValue(dataFirstCam[resolutionW]);
-        ui->resolutionHeightFirstCam->setValue(dataFirstCam[resolutionH]);
-        ui->posistionXFirstCam->setValue(dataFirstCam[positionX]);
-        ui->posistionYFirstCam->setValue(dataFirstCam[positionY]);
-        ui->sizeWidthFirstCam->setValue(dataFirstCam[sizeW]);
-        ui->sizeHeightFirstCam->setValue(dataFirstCam[sizeH]);
-        ui->fowWidthFirstCam->setValue(dataFirstCam[fowW]);
-        ui->fowHeightFirstCam->setValue(dataFirstCam[fowH]);
+    const indexDataCam indexes[] = {
+        lat, lon, hgt,
+        azim, elevation,
+        resolutionW, resolutionH,
+        positionX, positionY,
+        sizeW, sizeH,
+        fowW, fowH
+    };
 
-        if(!dataSecondCam.isEmpty()) resultClick();
+    QDoubleSpinBox* firstCamSpinBoxesArray[] = {
+        ui->latFirstCam, ui->lonFirstCam, ui->hFirstCam,
+        ui->azimuthFirstCam, ui->evelationFirstCam,
+        ui->resolutionWidthFirstCam, ui->resolutionHeightFirstCam,
+        ui->posistionXFirstCam, ui->posistionYFirstCam,
+        ui->sizeWidthFirstCam, ui->sizeHeightFirstCam,
+        ui->fowWidthFirstCam, ui->fowHeightFirstCam
+    };
+
+    QDoubleSpinBox* secondCamSpinBoxesArray[] = {
+        ui->latSecondCam, ui->lonSecondCam, ui->hSecondCam,
+        ui->azimuthSecondCam, ui->evelationSecondCam,
+        ui->resolutionWidthSecondCam, ui->resolutionHeightSecondCam,
+        ui->posistionXSecondCam, ui->posistionYSecondCam,
+        ui->sizeWidthSecondCam, ui->sizeHeightSecondCam,
+        ui->fowWidthSecondCam, ui->fowHeightSecondCam
+    };
+
+    for (const auto index : indexes)
+    {
+        firstCamSpinBoxes[index] = firstCamSpinBoxesArray[index];
+        secondCamSpinBoxes[index] = secondCamSpinBoxesArray[index];
     }
-    else if (!dataFirstCam.isEmpty())
+}
+
+void loadCamSlotHelper (QVector<double>* data, std::array<QDoubleSpinBox*, shmath::indexDataCamLength>* sboxes)
+{
+    using namespace ::shmath;
+
+    if(data->size() == static_cast<int> (sboxes->size()))
+    {
+        for (auto index = 0; index < data->size(); ++index)
+        {
+            (*sboxes)[index]->setValue((*data)[index]);
+        }
+    }
+    else if (!data->isEmpty())
     {
         QMessageBox *msg = new QMessageBox;
         msg->setText("Некорректные данные!");
         msg->exec();
     }
+}
 
+void MainWindow::slotFirstButtonClicked()
+{
+    dataFirstCam = dataFromFile();
+
+    loadCamSlotHelper (&dataFirstCam, &firstCamSpinBoxes);
+
+    if (! (dataFirstCam.isEmpty() || dataSecondCam.isEmpty()))
+    {
+        resultClick();
+    }
 }
 
 void MainWindow::slotSecondButtonClicked()
 {
-    using namespace ::shmath;
-
     dataSecondCam = dataFromFile();
-    if(dataSecondCam.size() == numInputData)
-    {
-        ui->latSecondCam->setValue(dataSecondCam[lat]);
-        ui->lonSecondCam->setValue(dataSecondCam[lon]);
-        ui->hSecondCam->setValue(dataSecondCam[hgt]);
-        ui->azimuthSecondCam->setValue(dataSecondCam[azim]);
-        ui->evelationSecondCam->setValue(dataSecondCam[elevation]);
-        ui->resolutionWidthSecondCam->setValue(dataSecondCam[resolutionW]);
-        ui->resolutionHeightSecondCam->setValue(dataSecondCam[resolutionH]);
-        ui->posistionXSecondCam->setValue(dataSecondCam[positionX]);
-        ui->posistionYSecondCam->setValue(dataSecondCam[positionY]);
-        ui->sizeWidthSecondCam->setValue(dataSecondCam[sizeW]);
-        ui->sizeHeightSecondCam->setValue(dataSecondCam[sizeH]);
-        ui->fowWidthSecondCam->setValue(dataSecondCam[fowW]);
-        ui->fowHeightSecondCam->setValue(dataSecondCam[fowH]);
 
-        if(!dataFirstCam.isEmpty()) resultClick();
-    }
-    else if (!dataSecondCam.isEmpty())
+    loadCamSlotHelper (&dataSecondCam, &secondCamSpinBoxes);
+
+    if (! (dataFirstCam.isEmpty() || dataSecondCam.isEmpty()))
     {
-        QMessageBox msg;
-        msg.setText("Некорректные данные!");
-        msg.exec();
+        resultClick();
     }
 }
 
@@ -215,8 +230,6 @@ void MainWindow::resultClick()
             }
         }
     }
-
-
 }
 
 void MainWindow::slotAboutProgramButtonClicked()
@@ -227,34 +240,10 @@ void MainWindow::slotAboutProgramButtonClicked()
 void MainWindow::slotClearButtonClicked()
 {
     dataFirstCam.clear();
-    ui->latFirstCam->setValue(0);
-    ui->lonFirstCam->setValue(0);
-    ui->hFirstCam->setValue(0);
-    ui->azimuthFirstCam->setValue(0);
-    ui->evelationFirstCam->setValue(0);
-    ui->resolutionWidthFirstCam->setValue(0);
-    ui->resolutionHeightFirstCam->setValue(0);
-    ui->posistionXFirstCam->setValue(0);
-    ui->posistionYFirstCam->setValue(0);
-    ui->sizeWidthFirstCam->setValue(0);
-    ui->sizeHeightFirstCam->setValue(0);
-    ui->fowWidthFirstCam->setValue(0);
-    ui->fowHeightFirstCam->setValue(0);
+    for (auto sb: firstCamSpinBoxes) { sb->setValue(0); }
 
     dataSecondCam.clear();
-    ui->latSecondCam->setValue(0);
-    ui->lonSecondCam->setValue(0);
-    ui->hSecondCam->setValue(0);
-    ui->azimuthSecondCam->setValue(0);
-    ui->evelationSecondCam->setValue(0);
-    ui->resolutionWidthSecondCam->setValue(0);
-    ui->resolutionHeightSecondCam->setValue(0);
-    ui->posistionXSecondCam->setValue(0);
-    ui->posistionYSecondCam->setValue(0);
-    ui->sizeWidthSecondCam->setValue(0);
-    ui->sizeHeightSecondCam->setValue(0);
-    ui->fowWidthSecondCam->setValue(0);
-    ui->fowHeightSecondCam->setValue(0);
+    for (auto sb : secondCamSpinBoxes) { sb->setValue(0); }
 
     dataResultCam.clear();
     ui->resultList->clear();
