@@ -1,0 +1,8 @@
+# Balloon 3D coordinates (degrees x degrees x meters)
+B_LAT=47.177
+B_LON=39.426
+B_ALT=120.000000
+
+# Real balloon size, meters
+RB_W=1.0
+RB_H=0.8
