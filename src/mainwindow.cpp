@@ -1,16 +1,23 @@
-#include "header/mainwindow.h"
-#include "ui_mainwindow.h"
-#include "header/mathematics.h"
+#include "mainwindow.h"
+
 #include <QMessageBox>
 #include <QMap>
+#include <QFile>
+#include <QFileDialog>
+#include <QGeoCoordinate>
 
-const double numInputData = 13;
+#include "ui_mainwindow.h"
+#include "mathematics.h"
 
-QVector<QString> strCam = {"Широта видеокамеры:", "Долгота видеокамеры:", "Высота видеокамеры:", "Азимут:",
-                           "Угол места:", "Число пикселей по горизонтали:", "Число пикселей по вертикали:",
-                           "Расположение шарика по оси абцис:", "Расположение шарика по оси ординат:",
-                           "Размер по горизонтали:", "Размер по вертикали:", "Ширина поля зрения:", "Высота поля зрения:"};
-QVector<QString> strResult = {"Широта:", "Долгота:", "Высота:", "Ширина:", "Высота:"};
+namespace {
+    const double numInputData = 13;
+
+    QVector<QString> strCam = {"Широта видеокамеры:", "Долгота видеокамеры:", "Высота видеокамеры:", "Азимут:",
+                               "Угол места:", "Число пикселей по горизонтали:", "Число пикселей по вертикали:",
+                               "Расположение шарика по оси абцис:", "Расположение шарика по оси ординат:",
+                               "Размер по горизонтали:", "Размер по вертикали:", "Ширина поля зрения:", "Высота поля зрения:"};
+    QVector<QString> strResult = {"Широта:", "Долгота:", "Высота:", "Ширина:", "Высота:"};
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -26,7 +33,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionQt, &QAction::triggered, this, &MainWindow::slotAboutQtButtonClicked);
     connect(ui->actionProgramm, &QAction::triggered, this, &MainWindow::slotAboutProgramButtonClicked);
     connect(ui->resultButton, &QPushButton::clicked, this, &MainWindow::slotResultButtonClicked);
-
 
     //QHBoxLayout *layout = new QHBoxLayout(this);
     //layout->addWidget(ui->firstCamButton);
@@ -104,6 +110,7 @@ QVector<double> MainWindow::dataFromFile(){
 
 void MainWindow::slotFirstButtonClicked()
 {
+    using namespace ::shmath;
 
     dataFirstCam = dataFromFile();
     if(dataFirstCam.size() == numInputData)
@@ -135,6 +142,8 @@ void MainWindow::slotFirstButtonClicked()
 
 void MainWindow::slotSecondButtonClicked()
 {
+    using namespace ::shmath;
+
     dataSecondCam = dataFromFile();
     if(dataSecondCam.size() == numInputData)
     {
@@ -164,7 +173,9 @@ void MainWindow::slotSecondButtonClicked()
 
 void MainWindow::resultClick()
 {
-   dataResultCam.clear();
+    using namespace ::shmath;
+
+    dataResultCam.clear();
     if(equalVector(dataFirstCam, dataSecondCam, 0.00000001))
     {
         QMessageBox msg;

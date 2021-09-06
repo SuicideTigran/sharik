@@ -1,12 +1,7 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
-#include <QtWidgets>
-#include <QFile>
-#include <QFileDialog>
 #include <QVector>
-#include <QGeoCoordinate>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -31,11 +26,11 @@ private slots:
 private:
     void resultClick();
     QVector<double> dataFromFile();
+    void fillTaggedSpinboxes ();
 
     QVector<double> dataFirstCam;
     QVector<double> dataSecondCam;
     QVector<double> dataResultCam;
-    Ui::MainWindow *ui;
 
+    Ui::MainWindow *ui;
 };
-#endif // MAINWINDOW_H
