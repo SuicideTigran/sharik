@@ -1,4 +1,5 @@
-#include "header/mainwindow.h"
+#include "mainwindow.h"
+
 #include <QApplication>
 #include <QWidget>
 

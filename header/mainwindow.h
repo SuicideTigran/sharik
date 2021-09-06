@@ -1,16 +1,15 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
-#include <QtWidgets>
-#include <QFile>
-#include <QFileDialog>
 #include <QVector>
-#include <QGeoCoordinate>
+
+#include "mathematics.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
+
+class QDoubleSpinBox;
 
 class MainWindow : public QMainWindow
 {
@@ -31,11 +30,14 @@ private slots:
 private:
     void resultClick();
     QVector<double> dataFromFile();
+    void fillTaggedSpinboxes ();
 
     QVector<double> dataFirstCam;
     QVector<double> dataSecondCam;
     QVector<double> dataResultCam;
-    Ui::MainWindow *ui;
 
+    std::array<QDoubleSpinBox*, shmath::indexDataCamLength> firstCamSpinBoxes;
+    std::array<QDoubleSpinBox*, shmath::indexDataCamLength> secondCamSpinBoxes;
+
+    Ui::MainWindow *ui;
 };
-#endif // MAINWINDOW_H
